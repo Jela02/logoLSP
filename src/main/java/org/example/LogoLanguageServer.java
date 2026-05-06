@@ -21,10 +21,34 @@ public class LogoLanguageServer implements LanguageServer {
         capabilities.setSemanticTokensProvider(new SemanticTokensWithRegistrationOptions(
                 new SemanticTokensLegend(
                         List.of(
-                                SemanticTokenTypes.Keyword,
+                                "procedureKeyword",
+                                "loopKeyword",
+                                "conditionKeyword",
+                                "definitionKeyword",
+                                "positionCommand",
+                                "turtleQuery",
+                                "penCommand",
+                                "penQuery",
+                                "drawingCommand",
+                                "windowCommand",
+                                "windowQuery",
+                                "outputCommand",
+                                "mathCommand",
+                                "logicCommand",
+                                "listCommand",
+                                "controlCommand",
+                                "procedureCommand",
+                                "variableCommand",
+                                "predicateCommand",
+                                "receiverCommand",
                                 SemanticTokenTypes.Function,
                                 SemanticTokenTypes.Variable,
-                                SemanticTokenTypes.Number
+                                SemanticTokenTypes.Number,
+                                SemanticTokenTypes.String,
+                                SemanticTokenTypes.Comment,
+                                SemanticTokenTypes.Operator,
+                                "toKeyword",
+                                "endKeyword"
                         ),
                         List.of(
                                 SemanticTokenModifiers.Declaration,
@@ -67,4 +91,5 @@ public class LogoLanguageServer implements LanguageServer {
     @Override
     public void setTrace(SetTraceParams params) {
     }
+
 }
