@@ -92,4 +92,6 @@ public class LogoLanguageServer implements LanguageServer {
     public void setTrace(SetTraceParams params) {
     }
 
+
+
 }

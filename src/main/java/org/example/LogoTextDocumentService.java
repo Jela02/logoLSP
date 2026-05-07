@@ -1,7 +1,8 @@
 package org.example;
 
+import org.example.analysis.ProcedureDefinition;
+import org.example.analysis.VariableDefinition;
 import org.example.parser.*;
-import org.example.analysis.*;
 
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -23,10 +24,6 @@ public class LogoTextDocumentService implements TextDocumentService {
         return TextDocumentService.super.declaration(params);
     }
 
-    @Override
-    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
-        return TextDocumentService.super.definition(params);
-    }
 
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
@@ -221,7 +218,49 @@ public class LogoTextDocumentService implements TextDocumentService {
     }
 
     @Override
-    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> typeDefinition(TypeDefinitionParams params) {
-        return TextDocumentService.super.typeDefinition(params);
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
+        System.err.println("DEFINITION CALLED");
+        String uri = params.getTextDocument().getUri();
+        Position pos = params.getPosition();
+
+        DocumentAnalysis analysis = documents.get(uri);
+        if(analysis == null){
+            return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+        }
+
+        LogoToken token = analysis.findTokenAt(pos.getLine(), pos.getCharacter());
+        if (token == null){
+            return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+        }
+        if(token.type == LogoTokenType.IDENTIFIER){
+            ProcedureDefinition def = analysis.findProcedure(token.text);
+            if(def != null){
+                return CompletableFuture.completedFuture(Either.forLeft(List.of(location(uri, def.line, def.column, def.name.length()))));
+            }
+        }
+        if(token.type == LogoTokenType.VARIABLE){
+            VariableDefinition def = analysis.findVariable(token.text, token.line, token.column);
+            if(def != null){
+                return CompletableFuture.completedFuture(Either.forLeft(List.of(location(uri, def.line, def.column, tokenLengthAt(analysis, def)))));
+            }
+        }
+        return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
+    }
+    private int tokenLengthAt(DocumentAnalysis analysis, VariableDefinition definition) {
+        LogoToken token = analysis.findTokenAt(definition.line, definition.column);
+        if (token != null) {
+            return token.text.length();
+        }
+        return definition.name.length();
+    }
+
+    private Location location(String uri, int line, int column, int length) {
+        Location location = new Location();
+        location.setUri(uri);
+        location.setRange(new Range(
+                new Position(line, column),
+                new Position(line, column + length)
+        ));
+        return location;
     }
 }
