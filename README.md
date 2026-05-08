@@ -4,7 +4,7 @@ A custom implementation of the Language Server Protocol (LSP) for the ___Logo___
 
 The project consists of:
 
-- __Server__ — written in Java using LSP4J
+- __Server__ — written in Java using [LSP4J](https://github.com/eclipse-lsp4j/lsp4j)
 - __Client__ — a custom Visual Studio Code extension written in JavaScript
 
 The server communicates with the VS Code extension over standard input/output.
@@ -28,7 +28,7 @@ Before running the project, ensure the following tools are installed:
 
 ## Running the LSP from IntelliJ IDEA
 1. Open the project in IntelliJ IDEA
-2. Run the `Run LSP in VSCode` run configuration
+2. Run the `Prepare and Run LSP in VSCode` run configuration
 
 The configuration will:
 
