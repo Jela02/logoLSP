@@ -2,28 +2,26 @@ package org.example.analysis;
 
 public class VariableDefinition {
 
-    public enum Scope {
-        GLOBAL,
-        LOCAL
-    }
-
     public final String name;
     public final int line;
     public final int column;
-    public final Scope scope; // add global or local scope
     public final String procedureName;
 
     public VariableDefinition(String text, int line, int column) {
-        this(text, line, column, Scope.GLOBAL, null);
+        this(text, line, column, null);
     }
 
-    public VariableDefinition(String text, int line, int column, Scope scope, String procedureName) {
+    public VariableDefinition(String text, int line, int column, String procedureName) {
         this.name = normalizeName(text);
         this.line = line;
         this.column = column;
-        this.scope = scope;
         this.procedureName = procedureName;
     }
+
+    public boolean isGlobal() {
+        return procedureName == null;
+    }
+
     // skip : or "
     public static String normalizeName(String text) {
         if (text == null || text.isEmpty()) {
@@ -37,6 +35,6 @@ public class VariableDefinition {
 
     @Override
     public String toString() {
-        return "Variable{name='" + name + "', scope=" + scope + ", procedureName='" + procedureName + "', position: (" + line + "," + column + ")}";
+        return "Variable{name='" + name + "', procedureName='" + procedureName + "', position: (" + line + "," + column + ")}";
     }
 }

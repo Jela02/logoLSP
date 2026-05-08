@@ -48,7 +48,6 @@ public class Main {
                 LSPLauncher.createServerLauncher(server, System.in, System.out);
 
         LanguageClient client = launcher.getRemoteProxy();
-
         server.connect(client);
 
         try {

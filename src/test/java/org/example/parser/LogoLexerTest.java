@@ -25,30 +25,30 @@ public class LogoLexerTest {
     }
 
     @Test
-    void tokenizesTurtleAcademyCommandsByFeatureGroup() {
-        assertTokenType("pos", LogoTokenType.TURTLE_QUERY);
-        assertTokenType("xcor", LogoTokenType.TURTLE_QUERY);
-        assertTokenType("set", LogoTokenType.POSITION_COMMAND);
-        assertTokenType("setpos", LogoTokenType.POSITION_COMMAND);
-        assertTokenType("ellipse", LogoTokenType.DRAWING_COMMAND);
-        assertTokenType("wrap", LogoTokenType.WINDOW_COMMAND);
-        assertTokenType("shown?", LogoTokenType.WINDOW_QUERY);
-        assertTokenType("setcolor", LogoTokenType.PEN_COMMAND);
-        assertTokenType("pendown?", LogoTokenType.PEN_QUERY);
-        assertTokenType("define", LogoTokenType.PROCEDURE_COMMAND);
-        assertTokenType("def", LogoTokenType.PROCEDURE_COMMAND);
+    void tokenizesBuiltInCommandsAsCommand() {
+        assertTokenType("pos", LogoTokenType.COMMAND);
+        assertTokenType("xcor", LogoTokenType.COMMAND);
+        assertTokenType("set", LogoTokenType.COMMAND);
+        assertTokenType("setpos", LogoTokenType.COMMAND);
+        assertTokenType("ellipse", LogoTokenType.COMMAND);
+        assertTokenType("wrap", LogoTokenType.COMMAND);
+        assertTokenType("shown?", LogoTokenType.COMMAND);
+        assertTokenType("setcolor", LogoTokenType.COMMAND);
+        assertTokenType("pendown?", LogoTokenType.COMMAND);
+        assertTokenType("define", LogoTokenType.COMMAND);
+        assertTokenType("def", LogoTokenType.COMMAND);
         assertTokenType("localmake", LogoTokenType.VARIABLE_COMMAND);
         assertTokenType("thing", LogoTokenType.VARIABLE_COMMAND);
         assertTokenType("dotimes", LogoTokenType.LOOP_KEYWORD);
         assertTokenType("do.while", LogoTokenType.LOOP_KEYWORD);
         assertTokenType("iftrue", LogoTokenType.CONDITION_KEYWORD);
-        assertTokenType("wait", LogoTokenType.CONTROL_COMMAND);
-        assertTokenType("readword", LogoTokenType.RECEIVER_COMMAND);
-        assertTokenType("minus", LogoTokenType.MATH_COMMAND);
-        assertTokenType("power", LogoTokenType.MATH_COMMAND);
-        assertTokenType("array", LogoTokenType.LIST_COMMAND);
-        assertTokenType("number?", LogoTokenType.PREDICATE_COMMAND);
-        assertTokenType("substringp", LogoTokenType.PREDICATE_COMMAND);
+        assertTokenType("wait", LogoTokenType.COMMAND);
+        assertTokenType("readword", LogoTokenType.COMMAND);
+        assertTokenType("minus", LogoTokenType.COMMAND);
+        assertTokenType("power", LogoTokenType.COMMAND);
+        assertTokenType("array", LogoTokenType.COMMAND);
+        assertTokenType("number?", LogoTokenType.COMMAND);
+        assertTokenType("substringp", LogoTokenType.COMMAND);
     }
 
     @Test

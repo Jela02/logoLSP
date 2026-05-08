@@ -11,44 +11,32 @@ import java.util.concurrent.CompletableFuture;
 
 public class LogoLanguageServer implements LanguageServer {
     private final LogoTextDocumentService textDocumentService = new LogoTextDocumentService();
-    private LanguageClient client;
+
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
         System.err.println("INITIALIZE");
         ServerCapabilities capabilities = new ServerCapabilities();
+        capabilities.setDeclarationProvider(true);
         capabilities.setDefinitionProvider(true);
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setSemanticTokensProvider(new SemanticTokensWithRegistrationOptions(
                 new SemanticTokensLegend(
                         List.of(
+                                "toKeyword",
+                                "endKeyword",
                                 "procedureKeyword",
                                 "loopKeyword",
                                 "conditionKeyword",
                                 "definitionKeyword",
-                                "positionCommand",
-                                "turtleQuery",
-                                "penCommand",
-                                "penQuery",
-                                "drawingCommand",
-                                "windowCommand",
-                                "windowQuery",
-                                "outputCommand",
-                                "mathCommand",
-                                "logicCommand",
-                                "listCommand",
-                                "controlCommand",
-                                "procedureCommand",
                                 "variableCommand",
-                                "predicateCommand",
-                                "receiverCommand",
+                                "command",
                                 SemanticTokenTypes.Function,
                                 SemanticTokenTypes.Variable,
                                 SemanticTokenTypes.Number,
                                 SemanticTokenTypes.String,
                                 SemanticTokenTypes.Comment,
-                                SemanticTokenTypes.Operator,
-                                "toKeyword",
-                                "endKeyword"
+                                SemanticTokenTypes.Operator
+
                         ),
                         List.of(
                                 SemanticTokenModifiers.Declaration,
@@ -83,15 +71,11 @@ public class LogoLanguageServer implements LanguageServer {
         return null;
     }
 
-    public void connect(LanguageClient client){
-        this.client = client;
+    public void connect(LanguageClient client) {
         textDocumentService.connect(client);
     }
 
     @Override
     public void setTrace(SetTraceParams params) {
     }
-
-
-
 }
