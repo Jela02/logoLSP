@@ -25,20 +25,20 @@
       "editor.semanticTokenColorCustomizations": {
         "enabled": true,
         "rules": {
-          "toKeyword": "#ce5995",
-          "endKeyword":"#ce5995",
-          "procedureKeyword": "#902b88",
-          "loopKeyword": "#7b45a1",
-          "conditionKeyword":"#57afe5",
-          "definitionKeyword": "#40108d",
-          "command": "#ba4c4c",
-          "keyword": "#d814c8",
-          "function": "#e0e57d",
-          "variable": "#52438e",
-          "number": "#4458a0",
-          "string": "#e67f56",
-          "comment": "#747474",
-          "operator": "#f5b55c"
+          "toKeyword": "#7ee787",
+          "endKeyword": "#7ee787",
+          "procedureKeyword": "#2f6b3b",
+          "loopKeyword": "#d8a657",
+          "conditionKeyword": "#5fb3ff",
+          "definitionKeyword": "#4b8b5f",
+          "command": "#3fa34d",
+          "keyword": "#b7e07a",
+          "function": "#d7df6f",
+          "variable": "#62c7b3",
+          "number": "#7a88d1",
+          "string": "#e07a5f",
+          "comment": "#6b7280",
+          "operator": "#f2c14e"
         }
       }
     }
