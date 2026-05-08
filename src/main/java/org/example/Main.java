@@ -13,7 +13,7 @@ import java.nio.file.StandardOpenOption;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    private static final Path LOG_PATH = Path.of("logo-lsp.log");
+    private static final Path LOG_PATH = Path.of("target\\logo-lsp.log");
 
     private static void log(String message) {
         try {

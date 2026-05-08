@@ -1,0 +1,52 @@
+{
+  "name": "logo-lsp-client",
+  "displayName": "Logo Language Client",
+  "description": "VS Code klijent za Logo LSP server",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "activationEvents": [
+    "onLanguage:logo"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "logo",
+        "aliases": ["Logo", "logo"],
+        "extensions": [".logo"]
+      }
+    ],
+    "configurationDefaults": {
+      "[logo]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "enabled": true,
+        "rules": {
+          "toKeyword": "#ce5995",
+          "endKeyword":"#ce5995",
+          "procedureKeyword": "#902b88",
+          "loopKeyword": "#7b45a1",
+          "conditionKeyword":"#57afe5",
+          "definitionKeyword": "#40108d",
+          "command": "#ba4c4c",
+          "keyword": "#d814c8",
+          "function": "#e0e57d",
+          "variable": "#52438e",
+          "number": "#4458a0",
+          "string": "#e67f56",
+          "comment": "#747474",
+          "operator": "#f5b55c"
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0"
+  }
+}

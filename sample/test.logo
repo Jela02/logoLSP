@@ -1,0 +1,145 @@
+cs
+window
+ht
+setwidth 2
+setcolor 10
+
+; =========================
+; GLOBAL VARIABLES
+; =========================
+make "size 120
+make "angle 90
+make "step 10
+
+; =========================
+; RANDOM COLOR PICKER
+; =========================
+to randColor
+  setcolor random :size
+end
+
+; =========================
+; DRAW SQUARE
+; =========================
+to square :size
+  repeat 4 [
+    fd :size
+    rt 90
+  ]
+end
+
+; =========================
+; DRAW TRIANGLE
+; =========================
+to triangle :size
+  repeat 3 [
+    fd :size
+    rt 120
+  ]
+end
+
+; =========================
+; SPIRAL PATTERN
+; =========================
+to spiral
+  make "i 0
+  while :i < 80 [
+    randColor
+    fd :i
+    rt 20
+    make "i sum :i 1
+  ]
+end
+
+; =========================
+; STAR BURST
+; =========================
+to starburst :lines
+  dotimes [ i :lines ] [
+    randColor
+    fd 100
+    bk 100
+    rt minus 360 :lines
+  ]
+end
+
+
+; =========================
+; GRID TEST
+; =========================
+to grid :n
+  setcolor 7
+  dotimes [ i :n ] [
+    fd 200
+    bk 200
+    rt 360 / :n
+  ]
+end
+
+; =========================
+; RANDOM WALK
+; =========================
+to walk :steps
+  dotimes [ i :steps ] [
+    randColor
+    fd random 20
+    rt random 360
+  ]
+end
+
+
+; =========================
+; COMPLEX COMPOSITION
+; =========================
+to mega
+  pu
+  setxy -100 0
+  pd
+
+  square 
+
+  pu setxy 100 100 pd
+  triangle 60
+
+  pu setxy -120 120 pd
+  spiral
+
+  pu setxy 0 -120 pd
+  starburst 36
+
+  pu setxy 120 -120 pd
+  walk 100
+end
+
+
+; =========================
+; FILL TEST SHAPE
+; =========================
+pu setxy -50 -50 pd
+filled "cyan [
+  repeat 4 [
+    fd 100
+    rt 90
+  ]
+]
+
+; =========================
+; ARC + ELLIPSE TEST
+; =========================
+pu setxy 0 0 pd
+setcolor 5
+arc 270 80
+
+pu setxy -80 80 pd
+setcolor 14
+ellipse 120 60
+
+; =========================
+; RUN EVERYTHING
+; =========================
+mega
+
+ht
+ 
+randColor
+square :size
