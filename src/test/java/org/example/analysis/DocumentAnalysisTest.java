@@ -23,14 +23,14 @@ class DocumentAnalysisTest {
         VariableDefinition global = analysis.findVariable(":x", 4, 7);
 
         assertNotNull(local);
-        assertEquals("demo", local.procedureName);
-        assertEquals(1, local.line);
-        assertEquals(8, local.column);
+        assertEquals("demo", local.procedureName());
+        assertEquals(1, local.line());
+        assertEquals(8, local.column());
 
         assertNotNull(global);
-        assertNull(global.procedureName);
-        assertEquals(0, global.line);
-        assertEquals(5, global.column);
+        assertNull(global.procedureName());
+        assertEquals(0, global.line());
+        assertEquals(5, global.column());
     }
 
     @Test
@@ -46,9 +46,9 @@ class DocumentAnalysisTest {
         VariableDefinition variable = analysis.findVariable(":x", 3, 7);
 
         assertNotNull(variable);
-        assertEquals("demo", variable.procedureName);
-        assertEquals(2, variable.line);
-        assertEquals(10, variable.column);
+        assertEquals("demo", variable.procedureName());
+        assertEquals(2, variable.line());
+        assertEquals(10, variable.column());
     }
 
     @Test
@@ -64,9 +64,9 @@ class DocumentAnalysisTest {
         VariableDefinition variable = analysis.findVariable(":x", 2, 7);
 
         assertNotNull(variable);
-        assertNull(variable.procedureName);
-        assertEquals(0, variable.line);
-        assertEquals(5, variable.column);
+        assertNull(variable.procedureName());
+        assertEquals(0, variable.line());
+        assertEquals(5, variable.column());
     }
 
     @Test
@@ -78,7 +78,7 @@ class DocumentAnalysisTest {
                 """);
 
         assertEquals(1, analysis.getUndefinedVariables().size());
-        assertEquals(":missing", analysis.getUndefinedVariables().get(0).text);
+        assertEquals(":missing", analysis.getUndefinedVariables().getFirst().text());
     }
 
     @Test
@@ -91,7 +91,7 @@ class DocumentAnalysisTest {
                 """);
 
         assertEquals(1, analysis.getUndefinedProcedureCalls().size());
-        assertEquals("missingProcedure", analysis.getUndefinedProcedureCalls().get(0).text);
+        assertEquals("missingProcedure", analysis.getUndefinedProcedureCalls().getFirst().text());
     }
 
     @Test
@@ -107,9 +107,9 @@ class DocumentAnalysisTest {
         VariableDefinition counter = analysis.findVariable(":i", 2, 6);
 
         assertNotNull(counter);
-        assertEquals("demo", counter.procedureName);
-        assertEquals(1, counter.line);
-        assertEquals(10, counter.column);
+        assertEquals("demo", counter.procedureName());
+        assertEquals(1, counter.line());
+        assertEquals(10, counter.column());
         assertEquals(0, analysis.getUndefinedVariables().size());
         assertEquals(0, analysis.getUndefinedProcedureCalls().size());
     }

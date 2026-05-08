@@ -1,18 +1,13 @@
 package org.example.analysis;
 
-public class VariableDefinition {
-
-    public final String name;
-    public final int line;
-    public final int column;
-    public final String procedureName;
+public record VariableDefinition(String name, int line, int column, String procedureName) {
 
     public VariableDefinition(String text, int line, int column) {
         this(text, line, column, null);
     }
 
-    public VariableDefinition(String text, int line, int column, String procedureName) {
-        this.name = normalizeName(text);
+    public VariableDefinition(String name, int line, int column, String procedureName) {
+        this.name = normalizeName(name);
         this.line = line;
         this.column = column;
         this.procedureName = procedureName;

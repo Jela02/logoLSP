@@ -129,13 +129,11 @@ public class LogoLexer {
     private LogoToken variable() {
         int startPosition = position;
         int startColumnPosition = column;
-        position++; //skip :
-        column++;
 
-        while (position < input.length() && isWordPart(input.charAt(position))) {
+        do {
             position++;
             column++;
-        }
+        } while (position < input.length() && isWordPart(input.charAt(position)));
         String text = input.substring(startPosition, position).toLowerCase();
         return new LogoToken(LogoTokenType.VARIABLE, text, line, startColumnPosition);
 
@@ -194,12 +192,10 @@ public class LogoLexer {
         }
         if (position < input.length() && input.charAt(position) == '.'
                 && position + 1 < input.length() && Character.isDigit(input.charAt(position + 1))) {
-            position++;
-            column++;
-            while (position < input.length() && Character.isDigit(input.charAt(position))) {
+            do {
                 position++;
                 column++;
-            }
+            } while (position < input.length() && Character.isDigit(input.charAt(position)));
         }
         String text = input.substring(startPositon, position);
         return new LogoToken(LogoTokenType.NUMBER, text, line, startColumnPosition);
@@ -240,12 +236,10 @@ public class LogoLexer {
     private LogoToken string() {
         int startPosition = position;
         int startColumnPosition = column;
-        position++;
-        column++;
-        while (position < input.length() && !Character.isWhitespace(input.charAt(position)) && input.charAt(position) != '[' && input.charAt(position) != ']') {
+        do {
             position++;
             column++;
-        }
+        } while (position < input.length() && !Character.isWhitespace(input.charAt(position)) && input.charAt(position) != '[' && input.charAt(position) != ']');
         String text = input.substring(startPosition, position);
         return new LogoToken(LogoTokenType.STRING, text, line, startColumnPosition);
     }

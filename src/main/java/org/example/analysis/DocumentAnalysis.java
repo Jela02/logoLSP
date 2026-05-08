@@ -56,26 +56,26 @@ public class DocumentAnalysis {
         ProcedureDefinition currentProcedure = null;
         for(int i = 0; i < tokens.size(); i++){ // find all global and local variables and procedure definitions
             LogoToken token = tokens.get(i);
-            if (token.type == LogoTokenType.TO){ // procedure definition
+            if (token.type() == LogoTokenType.TO){ // procedure definition
                 if( i + 1 < tokens.size()){
                     LogoToken procedureName = tokens.get(i + 1);
-                    if(procedureName.type == LogoTokenType.IDENTIFIER){
-                        currentProcedure = new ProcedureDefinition(procedureName.text, procedureName.line, procedureName.column);
-                        procedures.put(procedureName.text, currentProcedure);
+                    if(procedureName.type() == LogoTokenType.IDENTIFIER){
+                        currentProcedure = new ProcedureDefinition(procedureName.text(), procedureName.line(), procedureName.column());
+                        procedures.put(procedureName.text(), currentProcedure);
                     }
                 }
             }
-            if (token.type == LogoTokenType.END && currentProcedure != null) {
-                currentProcedure.setEndPosition(token.line, token.column);
+            if (token.type() == LogoTokenType.END && currentProcedure != null) {
+                currentProcedure.setEndPosition(token.line(), token.column());
                 currentProcedure = null;
                 continue;
             }
-            if (token.type == LogoTokenType.IDENTIFIER){
-                if (i > 0 && tokens.get(i-1).type == LogoTokenType.TO) continue; // definition
-                procedureCalls.add(new ProcedureCall(token.text, token.line, token.column)); // procedure call
+            if (token.type() == LogoTokenType.IDENTIFIER){
+                if (i > 0 && tokens.get(i - 1).type() == LogoTokenType.TO) continue; // definition
+                procedureCalls.add(new ProcedureCall(token.text(), token.line(), token.column())); // procedure call
             }
 
-            if (token.type == LogoTokenType.VARIABLE && isProcedureParameter(i)) {
+            if (token.type() == LogoTokenType.VARIABLE && isProcedureParameter(i)) {
                 registerVariable(localVariable(token, currentProcedure));
                 continue;
             }
@@ -85,7 +85,7 @@ public class DocumentAnalysis {
                 continue;
             }
 
-            if (token.type == LogoTokenType.STRING && i > 0 && isVariableDefinitionCommand(tokens.get(i - 1))) {
+            if (token.type() == LogoTokenType.STRING && i > 0 && isVariableDefinitionCommand(tokens.get(i - 1))) {
                 registerVariable(declaredVariable(token, tokens.get(i - 1), currentProcedure));
             }
 
@@ -93,24 +93,23 @@ public class DocumentAnalysis {
         for(int i = 0; i < tokens.size(); i++) { //procedure can be defined later => second loop is necessary
             LogoToken token = tokens.get(i);
 
-            if (token.type == LogoTokenType.IDENTIFIER){
-                if (i > 0 && tokens.get(i-1).type == LogoTokenType.TO) continue; // definition
+            if (token.type() == LogoTokenType.IDENTIFIER){
+                if (i > 0 && tokens.get(i - 1).type() == LogoTokenType.TO) continue; // definition
                 if (isVariableDeclaration(i)) continue;
-                if (findProcedure(token.text) == null) {
+                if (findProcedure(token.text()) == null) {
                     undefinedProcedureCalls.add(token);
                 }
             }
 
-            if (token.type == LogoTokenType.VARIABLE && !isProcedureParameter(i) && findVariable(token.text, token.line, token.column) == null) {
+            if (token.type() == LogoTokenType.VARIABLE && !isProcedureParameter(i) && findVariable(token.text(), token.line(), token.column()) == null) {
                 undefinedVariables.add(token);
-                continue;
             }
         }
     }
 
     public LogoToken findTokenAt(int line, int column){
         for (LogoToken token: tokens){
-            if (token.line == line && column < token.column + token.text.length() && column >= token.column){
+            if (token.line() == line && column < token.column() + token.text().length() && column >= token.column()){
                 return token;
             }
         }
@@ -146,9 +145,9 @@ public class DocumentAnalysis {
     }
 
     private boolean isProcedureParameter(int index) {
-        int line = tokens.get(index).line;
-        for (int i = index - 1; i >= 0 && tokens.get(i).line == line; i--) {
-            if (tokens.get(i).type == LogoTokenType.TO) {
+        int line = tokens.get(index).line();
+        for (int i = index - 1; i >= 0 && tokens.get(i).line() == line; i--) {
+            if (tokens.get(i).type() == LogoTokenType.TO) {
                 return true;
             }
         }
@@ -157,42 +156,42 @@ public class DocumentAnalysis {
 
     public boolean isVariableDeclaration(int index) {
         LogoToken token = tokens.get(index);
-        return (token.type == LogoTokenType.VARIABLE && isProcedureParameter(index))
+        return (token.type() == LogoTokenType.VARIABLE && isProcedureParameter(index))
                 || isLoopVariableDeclaration(index)
-                || (token.type == LogoTokenType.STRING && index > 0 && isVariableDefinitionCommand(tokens.get(index - 1)));
+                || (token.type() == LogoTokenType.STRING && index > 0 && isVariableDefinitionCommand(tokens.get(index - 1)));
     }
 
     public boolean isVariableReference(LogoToken token) {
-        return token.type == LogoTokenType.VARIABLE
-                || (token.type == LogoTokenType.IDENTIFIER && findVariable(token.text, token.line, token.column) != null);
+        return token.type() == LogoTokenType.VARIABLE
+                || (token.type() == LogoTokenType.IDENTIFIER && findVariable(token.text(), token.line(), token.column()) != null);
     }
 
     private boolean isLoopVariableDeclaration(int index) {
-        return tokens.get(index).type == LogoTokenType.IDENTIFIER
+        return tokens.get(index).type() == LogoTokenType.IDENTIFIER
                 && index >= 2
-                && tokens.get(index - 1).type == LogoTokenType.SYMBOL
-                && tokens.get(index - 1).text.equals("[")
-                && tokens.get(index - 2).type == LogoTokenType.LOOP_KEYWORD
-                && (tokens.get(index - 2).text.equalsIgnoreCase("dotimes") || tokens.get(index - 2).text.equalsIgnoreCase("for"));
+                && tokens.get(index - 1).type() == LogoTokenType.SYMBOL
+                && tokens.get(index - 1).text().equals("[")
+                && tokens.get(index - 2).type() == LogoTokenType.LOOP_KEYWORD
+                && (tokens.get(index - 2).text().equalsIgnoreCase("dotimes") || tokens.get(index - 2).text().equalsIgnoreCase("for"));
     }
 
     private boolean isVariableDefinitionCommand(LogoToken token) {
-        if (token.type == LogoTokenType.DEFINITION_KEYWORD) {
+        if (token.type() == LogoTokenType.DEFINITION_KEYWORD) {
             return true;
         }
-        return token.type == LogoTokenType.VARIABLE_COMMAND && token.text.equalsIgnoreCase("localmake");
+        return token.type() == LogoTokenType.VARIABLE_COMMAND && token.text().equalsIgnoreCase("localmake");
     }
 
     private VariableDefinition declaredVariable(LogoToken token, LogoToken command, ProcedureDefinition currentProcedure) {
-        if (currentProcedure != null && (command.text.equalsIgnoreCase("local") || command.text.equalsIgnoreCase("localmake"))) {
+        if (currentProcedure != null && (command.text().equalsIgnoreCase("local") || command.text().equalsIgnoreCase("localmake"))) {
             return localVariable(token, currentProcedure);
         }
-        return new VariableDefinition(token.text, token.line, token.column);
+        return new VariableDefinition(token.text(), token.line(), token.column());
     }
 
     private VariableDefinition localVariable(LogoToken token, ProcedureDefinition currentProcedure) {
         String procedureName = currentProcedure == null ? null : currentProcedure.name;
-        return new VariableDefinition(token.text, token.line, token.column, procedureName);
+        return new VariableDefinition(token.text(), token.line(), token.column(), procedureName);
     }
 
     private ProcedureDefinition procedureAt(int line, int column) {
@@ -207,12 +206,12 @@ public class DocumentAnalysis {
     private void registerVariable(VariableDefinition variable) {
         variableDefinitions.add(variable);
         if (variable.isGlobal()) {
-            globalVariables.computeIfAbsent(variable.name, name -> new ArrayList<>()).add(variable);
+            globalVariables.computeIfAbsent(variable.name(), name -> new ArrayList<>()).add(variable);
             return;
         }
         localVariablesByProcedure
-                .computeIfAbsent(variable.procedureName, name -> new HashMap<>())
-                .computeIfAbsent(variable.name, name -> new ArrayList<>())
+                .computeIfAbsent(variable.procedureName(), name -> new HashMap<>())
+                .computeIfAbsent(variable.name(), name -> new ArrayList<>())
                 .add(variable);
     }
 
@@ -227,7 +226,7 @@ public class DocumentAnalysis {
     }
 
     private boolean isAtOrBefore(VariableDefinition variable, int line, int column) {
-        return variable.line < line || (variable.line == line && variable.column <= column);
+        return variable.line() < line || (variable.line() == line && variable.column() <= column);
     }
 
 }

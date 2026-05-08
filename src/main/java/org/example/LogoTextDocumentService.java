@@ -16,8 +16,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class LogoTextDocumentService implements TextDocumentService {
-    private Map<String, String> documentTexts = new HashMap<>();
-    private Map<String, DocumentAnalysis> documents = new HashMap<>();
+    private final Map<String, String> documentTexts = new HashMap<>();
+    private final Map<String, DocumentAnalysis> documents = new HashMap<>();
     private LanguageClient client;
 
 
@@ -41,7 +41,7 @@ public class LogoTextDocumentService implements TextDocumentService {
         if (params.getContentChanges().isEmpty()) {
             return;
         }
-        String text = params.getContentChanges().get(params.getContentChanges().size() - 1).getText();
+        String text = params.getContentChanges().getLast().getText();
         documentTexts.put(uri, text);
         DocumentAnalysis analysis = analyze(text);
         documents.put(uri, analysis);
@@ -84,18 +84,18 @@ public class LogoTextDocumentService implements TextDocumentService {
             if(tokenType == null){
                 continue;
             }
-            int deltaLine = token.line - prevLine;
-            int deltaColumn = deltaLine == 0 ? token.column - prevColumn : token.column;
+            int deltaLine = token.line() - prevLine;
+            int deltaColumn = deltaLine == 0 ? token.column() - prevColumn : token.column();
 
             data.add(deltaLine);
             data.add(deltaColumn);
 
-            data.add(token.text.length());
+            data.add(token.text().length());
             data.add(tokenType);
             data.add(semanticTokenModifiers(analysis, tokens, i));
 
-            prevLine = token.line;
-            prevColumn = token.column;
+            prevLine = token.line();
+            prevColumn = token.column();
         }
         return CompletableFuture.completedFuture(new SemanticTokens(data));
 
@@ -120,7 +120,7 @@ public class LogoTextDocumentService implements TextDocumentService {
         if (analysis.isVariableReference(token)) {
             return TOKEN_TYPE_VARIABLE;
         }
-        return switch (token.type) {
+        return switch (token.type()) {
             case TO -> TOKEN_TYPE_TO;
             case END -> TOKEN_TYPE_END;
             case PROCEDURE_KEYWORD -> TOKEN_TYPE_PROCEDURE_KEYWORD;
@@ -146,10 +146,10 @@ public class LogoTextDocumentService implements TextDocumentService {
         LogoToken token = tokens.get(index);
         int modifiers = 0;
 
-        if (token.type == LogoTokenType.IDENTIFIER && index > 0 && tokens.get(index - 1).type == LogoTokenType.TO) {
+        if (token.type() == LogoTokenType.IDENTIFIER && index > 0 && tokens.get(index - 1).type() == LogoTokenType.TO) {
             modifiers |= TOKEN_MODIFIER_DECLARATION;
         }
-        if (isBuiltInFunction(token.type)) {
+        if (isBuiltInFunction(token.type())) {
             modifiers |= TOKEN_MODIFIER_DEFAULT_LIBRARY;
         }
         if (analysis.isVariableDeclaration(index)) {
@@ -159,17 +159,7 @@ public class LogoTextDocumentService implements TextDocumentService {
         return modifiers;
     }
     private boolean isBuiltInFunction(LogoTokenType tokenType) {
-        if (tokenType == LogoTokenType.COMMAND || tokenType == LogoTokenType.VARIABLE_COMMAND) return true;
-        return false;
-    }
-    private boolean isVariableDeclaration(List<LogoToken> tokens, int index) {
-        int line = tokens.get(index).line;
-        for (int i = index - 1; i >= 0 && tokens.get(i).line == line; i--) {
-            if (tokens.get(i).type == LogoTokenType.TO) {
-                return true;
-            }
-        }
-        return false;
+        return tokenType == LogoTokenType.COMMAND || tokenType == LogoTokenType.VARIABLE_COMMAND;
     }
 
     private DocumentAnalysis analyze(String text){
@@ -188,11 +178,11 @@ public class LogoTextDocumentService implements TextDocumentService {
 
 
     private int tokenLengthAt(DocumentAnalysis analysis, VariableDefinition definition) {
-        LogoToken token = analysis.findTokenAt(definition.line, definition.column);
+        LogoToken token = analysis.findTokenAt(definition.line(), definition.column());
         if (token != null) {
-            return token.text.length();
+            return token.text().length();
         }
-        return definition.name.length();
+        return definition.name().length();
     }
 
     private Location location(String uri, int line, int column, int length) {
@@ -226,16 +216,16 @@ public class LogoTextDocumentService implements TextDocumentService {
         if (token == null){
             return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
         }
-        if(token.type == LogoTokenType.IDENTIFIER){
-            ProcedureDefinition def = analysis.findProcedure(token.text);
+        if(token.type() == LogoTokenType.IDENTIFIER){
+            ProcedureDefinition def = analysis.findProcedure(token.text());
             if(def != null){
                 return CompletableFuture.completedFuture(Either.forLeft(List.of(location(uri, def.line, def.column, def.name.length()))));
             }
         }
-        if(token.type == LogoTokenType.VARIABLE){
-            VariableDefinition def = analysis.findVariable(token.text, token.line, token.column);
+        if(token.type() == LogoTokenType.VARIABLE){
+            VariableDefinition def = analysis.findVariable(token.text(), token.line(), token.column());
             if(def != null){
-                return CompletableFuture.completedFuture(Either.forLeft(List.of(location(uri, def.line, def.column, tokenLengthAt(analysis, def)))));
+                return CompletableFuture.completedFuture(Either.forLeft(List.of(location(uri, def.line(), def.column(), tokenLengthAt(analysis, def)))));
             }
         }
         return CompletableFuture.completedFuture(Either.forLeft(Collections.emptyList()));
@@ -245,11 +235,11 @@ public class LogoTextDocumentService implements TextDocumentService {
         List<Diagnostic> diagnostics = new ArrayList<>();
 
         for (LogoToken token : analysis.getUndefinedVariables()) {
-            diagnostics.add(diagnostic(token, "Undefined variable: " + token.text));
+            diagnostics.add(diagnostic(token, "Undefined variable: " + token.text()));
         }
 
         for (LogoToken token : analysis.getUndefinedProcedureCalls()) {
-            diagnostics.add(diagnostic(token, "Undefined procedure: " + token.text));
+            diagnostics.add(diagnostic(token, "Undefined procedure: " + token.text()));
         }
 
         publishDiagnostics(uri, diagnostics);
@@ -264,8 +254,8 @@ public class LogoTextDocumentService implements TextDocumentService {
     private Diagnostic diagnostic(LogoToken token, String message) {
         Diagnostic diagnostic = new Diagnostic();
         diagnostic.setRange(new Range(
-                new Position(token.line, token.column),
-                new Position(token.line, token.column + token.text.length())
+                new Position(token.line(), token.column()),
+                new Position(token.line(), token.column() + token.text().length())
         ));
         diagnostic.setSeverity(DiagnosticSeverity.Error);
         diagnostic.setSource("logo-lsp");
