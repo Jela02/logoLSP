@@ -1,11 +1,13 @@
 # Logo Language Server
 
-This project is a custom Language Server Protocol (LSP) implementation for the Logo programming language.
-It is written in Java and uses the LSP4J library.
+A custom implementation of the Language Server Protocol (LSP) for the ___Logo___ programming language.
 
-The language server is intended to be used from a custom Visual Studio Code extension. When the extension is
-started with the `F5` key, VS Code opens a new Extension Development Host window where `.logo` files can use
-the language features provided by this server.
+The project consists of:
+
+- __Server__ — written in Java using LSP4J
+- __Client__ — a custom Visual Studio Code extension written in JavaScript
+
+The server communicates with the VS Code extension over standard input/output.
 
 ## Features
 
@@ -18,56 +20,36 @@ the language features provided by this server.
 
 ## Requirements
 
+Before running the project, ensure the following tools are installed:
 - Java 21
 - Maven
-- Visual Studio Code, for running the custom extension
+- Node.js and npm
+- Visual Studio Code
 
-## Build
+## Running the LSP from IntelliJ IDEA
+1. Open the project in IntelliJ IDEA
+2. Run the `Run LSP in VSCode` run configuration
 
-Build the server JAR with:
+The configuration will:
 
+- build the language server
+- install the client dependencies
+- launch VS Code with the extension loaded and open the `./sample` folder
+
+## Running the LSP from VSCode
+1. Build the language server
 ```bash
 mvn package
 ```
-
-The packaged server is created at:
-
-```text
-target/logoLSP-1.0-SNAPSHOT.jar
-```
-
-## Run the Server
-
-The server communicates over standard input and standard output, which is the usual setup for an LSP server
-started by an editor extension.
-
-You can run the built server directly with:
-
+2. Install the required dependencies
 ```bash
-java -jar target/logoLSP-1.0-SNAPSHOT.jar
+npm install ./client
 ```
-
-During development, the server writes log messages to:
-
-```text
-logo-lsp.log
+3. Launch the extension development host and open the `./sample` folder
 ```
-
-## Run with the VS Code Extension
-
-1. Open the VS Code extension project.
-2. Press `F5` to start debugging the extension.
-3. VS Code opens a new Extension Development Host window.
-4. Open or create a `.logo` file in that window.
-5. Use the supported language features, including syntax highlighting, go to definition, and diagnostics for undefined variables and procedures.
-
-## Test
-
-Run the tests with:
-
-```bash
-mvn test
+code --extensionDevelopmentPath="$PWD/client" "./sample"
 ```
+Or run the `Run LSP extension` configuration.
 
 ## Project Structure
 
